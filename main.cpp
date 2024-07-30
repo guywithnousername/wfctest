@@ -18,9 +18,9 @@ pair<int, int> dirs[8] = {{-1, 0}, {1, 0}, {-1, 1}, {1, 1},
 int n, m; // input
 int n2, m2; // output
 vector<vector<char>> ans;
-int nums;
+int nums; // number of grids created
 
-void wfs(vector<vector<set<char>>> grid) {
+void wfc(vector<vector<set<char>>> grid) {
     if (nums <= 0) return;
     /*
     pseudocode
@@ -36,9 +36,12 @@ void wfs(vector<vector<set<char>>> grid) {
                 wfs(copy)
         if not, set to ans and return 
     */
+
+   // lists tiles with specific entropy
     map<int, vector<pair<int, int>>> ent;
-    pair<int, int> lE = {-1, -1};
+    pair<int, int> lE = {-1, -1}; // leastEntropy
     bool flag = true;
+    // get entropy by checking how many choices there are. 
     for (int i = 0; i < n2; i ++) {
         for (int j = 0; j < m2; j ++) {
             if (grid[i][j].size() == 0) return;
@@ -47,7 +50,9 @@ void wfs(vector<vector<set<char>>> grid) {
             flag = false;
         }
     }
+
     if (flag) {
+        // print out
         for (int i = 0; i < n2; i ++) {
             for (int j = 0; j < m2; j ++) {
                 ans[i][j] = *(grid[i][j].begin());
@@ -59,6 +64,8 @@ void wfs(vector<vector<set<char>>> grid) {
         nums --;
         return;
     }
+
+    // pick a random tile with the lowest entropy (excluding tiles with 1 choice)
     vector<pair<int, int>> least = (*ent.begin()).second;
     // copied of cppreference lol https://en.cppreference.com/w/cpp/numeric/random/uniform_int_distribution
     std::random_device rd;
@@ -67,6 +74,9 @@ void wfs(vector<vector<set<char>>> grid) {
     lE = least[distrib(gen)];
     int cx = lE.first;
     int cy = lE.second;
+
+    // applies a random choice and changes 
+    // the grid based on it. 
     for (char poss : grid[cy][cx]) {
         auto copy = grid;
         copy[cy][cx] = set<char> {poss};
@@ -80,7 +90,7 @@ void wfs(vector<vector<set<char>>> grid) {
             a.begin(), a.end(), inserter(ins, ins.begin()));
             copy[cy + y][cx + x] = ins;
         }
-        wfs(copy);
+        wfc(copy);
     }
     return;
 }
@@ -98,6 +108,7 @@ int main() {
             }
         }
     }
+
     // get rules
     for (char tile : tiles) {
         rules[tile] = vector<set<char>> (8, set<char> {});
@@ -116,6 +127,7 @@ int main() {
             }
         }
     }
+
     // print out rules
     /*
     for (auto a : rules) {
@@ -128,8 +140,10 @@ int main() {
         }
     }
     */
+
+   // creates arguments and uses the function.
    set<char> s; 
    for (char a : tiles) s.insert(a);
    vector<vector<set<char>>> start (10, vector<set<char>> (10, s));
-   wfs(start);
+   wfc(start);
 }
