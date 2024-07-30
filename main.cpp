@@ -15,7 +15,8 @@ map<char, vector<set<char>>> rules;
 pair<int, int> dirs[8] = {{-1, 0}, {1, 0}, {-1, 1}, {1, 1}, 
 {0, 1}, {-1, -1}, {0, -1}, {1, -1}};
 
-int n, m;
+int n, m; // input
+int n2, m2; // output
 vector<vector<char>> ans;
 int nums;
 
@@ -38,8 +39,8 @@ void wfs(vector<vector<set<char>>> grid) {
     map<int, vector<pair<int, int>>> ent;
     pair<int, int> lE = {-1, -1};
     bool flag = true;
-    for (int i = 0; i < n; i ++) {
-        for (int j = 0; j < m; j ++) {
+    for (int i = 0; i < n2; i ++) {
+        for (int j = 0; j < m2; j ++) {
             if (grid[i][j].size() == 0) return;
             if (grid[i][j].size() == 1) continue;
             ent[grid[i][j].size()].push_back({j, i});
@@ -47,8 +48,8 @@ void wfs(vector<vector<set<char>>> grid) {
         }
     }
     if (flag) {
-        for (int i = 0; i < n; i ++) {
-            for (int j = 0; j < m; j ++) {
+        for (int i = 0; i < n2; i ++) {
+            for (int j = 0; j < m2; j ++) {
                 ans[i][j] = *(grid[i][j].begin());
                 cout << ans[i][j] ;
             }
@@ -72,7 +73,7 @@ void wfs(vector<vector<set<char>>> grid) {
         for (int dir = 0; dir < 8; dir ++) {
             int x = dirs[dir].first;
             int y = dirs[dir].second;
-            if (cy + y < 0 || cy + y >= n || cx + x < 0 || cx + x >= m) continue;
+            if (cy + y < 0 || cy + y >= n2 || cx + x < 0 || cx + x >= m2) continue;
             set<char> a = rules[poss][dir];
             set<char> ins = {};
             set_intersection(grid[cy + y][cx + x].begin(), grid[cy + y][cx + x].end(),
@@ -86,9 +87,9 @@ void wfs(vector<vector<set<char>>> grid) {
 
 int main() {
     // input 
-    cin >> n >> m >> nums;
+    cin >> n >> m >> n2 >> m2 >> nums;
     grid = vector<vector<char>> (n, vector<char> (m));
-    ans = vector<vector<char>> (n, vector<char> (m));
+    ans = vector<vector<char>> (n2, vector<char> (m2));
     for (int i = 0; i < n; i ++) {
         for (int j = 0; j < m; j ++) {
             cin >> grid[i][j];
