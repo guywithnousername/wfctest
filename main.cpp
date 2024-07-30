@@ -20,10 +20,10 @@ int n2, m2; // output
 vector<vector<char>> ans;
 int nums; // number of grids created
 
-int rand(int mx) { // random [0, mx)
+int rand(int st, int mx) { // random [st, mx]
     std::random_device rd;
     std::mt19937 gen(rd());
-    uniform_int_distribution<> distrib (0, mx - 1);
+    uniform_int_distribution<> distrib (st, mx);
     return distrib(gen);
 }
 
@@ -75,13 +75,17 @@ void wfc(vector<vector<set<char>>> grid) {
     // pick a random tile with the lowest entropy (excluding tiles with 1 choice)
     vector<pair<int, int>> least = (*ent.begin()).second;
 
-    lE = least[rand(least.size())];
+    lE = least[rand(0, least.size() - 1)];
     int cx = lE.first;
     int cy = lE.second;
 
     // finds and applies a random possibility
-    // **********************************************
-    // STILL NEEDS CHANGES HERE
+    /* **********************************************
+    STILL NEEDS CHANGES HERE 
+    - get way to use random to get choice
+    - get way to check if rejection happens and stop
+    it from choosing the same choice.
+    */
     char poss = *(grid[cy][cx].begin()); // placeholder
     auto copy = grid;
     copy[cy][cx] = set<char> {poss};
