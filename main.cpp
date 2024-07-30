@@ -27,22 +27,23 @@ int rand(int st, int mx) { // random [st, mx]
     return distrib(gen);
 }
 
-void wfc(vector<vector<set<char>>> grid) {
-    if (nums <= 0) return;
-    /*
-    pseudocode
-    ------------
-    check if there is a tile with no available choices
-        if so, return
-    try to find a least entropy tile that has multiple choices
-        if so:
-            loop through all the possible choices:
-                create a copy of grid 
-                set the tile in that copy to the choice
-                narrow down choices in surrounding tiles
-                wfs(copy)
-        if not, set to ans and return 
-    */
+char choose(map<char, int> a) {
+    vector<pair<int, char>> v (a.size());
+    int tem = 1;
+    for (pair<char, int> b : a) {
+        v.push_back({tem, b.first});
+        tem += b.second;
+    }
+    int choice = rand(0, a['\0']);
+    for (auto it = v.rbegin(); it != v.rend(); it ++) {
+        if (choice >= (*it).first) {
+            return (*it).second;
+        }
+    }
+}
+
+void wfc(vector<vector<map<char, int>>> grid) {
+    if (nums <= 0) return; 
 
    // lists tiles with specific entropy
     map<int, vector<pair<int, int>>> ent;
@@ -62,7 +63,7 @@ void wfc(vector<vector<set<char>>> grid) {
         // print out
         for (int i = 0; i < n2; i ++) {
             for (int j = 0; j < m2; j ++) {
-                ans[i][j] = *(grid[i][j].begin());
+                ans[i][j] = (*(grid[i][j].begin())).first;
                 cout << ans[i][j] ;
             }
             cout << "\n";
@@ -85,19 +86,23 @@ void wfc(vector<vector<set<char>>> grid) {
     - get way to use random to get choice
     - get way to check if rejection happens and stop
     it from choosing the same choice.
+    - remove nums variable
     */
-    char poss = *(grid[cy][cx].begin()); // placeholder
+    char poss = choose(grid[cy][cx]);
     auto copy = grid;
-    copy[cy][cx] = set<char> {poss};
+    copy[cy][cx] = map<char, int> {{poss, 1}};
     for (int dir = 0; dir < 8; dir ++) {
         int x = dirs[dir].first;
         int y = dirs[dir].second;
         if (cy + y < 0 || cy + y >= n2 || cx + x < 0 || cx + x >= m2) continue;
         map<char, int> a = rules[poss][dir];
-        set<char> ins = {};
-        
-        // set_intersection(grid[cy + y][cx + x].begin(), grid[cy + y][cx + x].end(),
-        // a.begin(), a.end(), inserter(ins, ins.begin()));
+        map<char, int> b = grid[cy + y][cx + x];
+        map<char, int> ins = {};
+        for (pair<char, int> tem : a) {
+            if (b.find(tem.first) != b.end()) {
+                ins[tem.first] = tem.second;
+            }
+        }
         copy[cy + y][cx + x] = ins;
     }
     wfc(copy);
@@ -155,8 +160,11 @@ int main() {
     */
 
    // creates arguments and uses the function.
-   set<char> s; 
-   for (char a : tiles) s.insert(a);
-   vector<vector<set<char>>> start (10, vector<set<char>> (10, s));
+   map<char, int> s; 
+   for (char a : tiles) {
+    s[a] = 1;
+    s['\0'] ++;
+   }
+   vector<vector<map<char, int>>> start (10, vector<map<char, int>> (10, s));
    wfc(start);
 }
