@@ -11,7 +11,7 @@ using namespace std;
 
 vector<vector<char>> grid;
 vector<char> tiles = {};
-map<char, vector<set<char>>> rules;
+map<char, vector<map<char, int>>> rules;
 pair<int, int> dirs[8] = {{-1, 0}, {1, 0}, {-1, 1}, {1, 1}, 
 {0, 1}, {-1, -1}, {0, -1}, {1, -1}};
 
@@ -19,6 +19,13 @@ int n, m; // input
 int n2, m2; // output
 vector<vector<char>> ans;
 int nums; // number of grids created
+
+int rand(int mx) { // random [0, mx)
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    uniform_int_distribution<> distrib (0, mx - 1);
+    return distrib(gen);
+}
 
 void wfc(vector<vector<set<char>>> grid) {
     if (nums <= 0) return;
@@ -67,31 +74,30 @@ void wfc(vector<vector<set<char>>> grid) {
 
     // pick a random tile with the lowest entropy (excluding tiles with 1 choice)
     vector<pair<int, int>> least = (*ent.begin()).second;
-    // copied of cppreference lol https://en.cppreference.com/w/cpp/numeric/random/uniform_int_distribution
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    uniform_int_distribution<> distrib (0, least.size() - 1);
-    lE = least[distrib(gen)];
+
+    lE = least[rand(least.size())];
     int cx = lE.first;
     int cy = lE.second;
 
-    // applies a random choice and changes 
-    // the grid based on it. 
-    for (char poss : grid[cy][cx]) {
-        auto copy = grid;
-        copy[cy][cx] = set<char> {poss};
-        for (int dir = 0; dir < 8; dir ++) {
-            int x = dirs[dir].first;
-            int y = dirs[dir].second;
-            if (cy + y < 0 || cy + y >= n2 || cx + x < 0 || cx + x >= m2) continue;
-            set<char> a = rules[poss][dir];
-            set<char> ins = {};
-            set_intersection(grid[cy + y][cx + x].begin(), grid[cy + y][cx + x].end(),
-            a.begin(), a.end(), inserter(ins, ins.begin()));
-            copy[cy + y][cx + x] = ins;
-        }
-        wfc(copy);
+    // finds and applies a random possibility
+    // **********************************************
+    // STILL NEEDS CHANGES HERE
+    char poss = *(grid[cy][cx].begin()); // placeholder
+    auto copy = grid;
+    copy[cy][cx] = set<char> {poss};
+    for (int dir = 0; dir < 8; dir ++) {
+        int x = dirs[dir].first;
+        int y = dirs[dir].second;
+        if (cy + y < 0 || cy + y >= n2 || cx + x < 0 || cx + x >= m2) continue;
+        map<char, int> a = rules[poss][dir];
+        set<char> ins = {};
+        
+        // set_intersection(grid[cy + y][cx + x].begin(), grid[cy + y][cx + x].end(),
+        // a.begin(), a.end(), inserter(ins, ins.begin()));
+        copy[cy + y][cx + x] = ins;
     }
+    wfc(copy);
+    // **********************************************
     return;
 }
 
@@ -111,7 +117,9 @@ int main() {
 
     // get rules
     for (char tile : tiles) {
-        rules[tile] = vector<set<char>> (8, set<char> {});
+        map<char, int> tem;
+        tem['\0'] = 0; // no one can use this, so it is the total. 
+        rules[tile] = vector<map<char, int>> (8, tem);
     }
     for (int i = 0; i < n; i ++) {
         for (int j = 0; j < m; j ++) {
@@ -123,7 +131,8 @@ int main() {
                 if (i + y < 0 || i + y >= n) continue;
                 char tile = grid[i][j];
                 char type = grid[i + y][j + x];
-                rules[tile][dir].insert(type);
+                rules[tile][dir][type] ++;
+                rules[tile][dir]['\0'] ++;
             }
         }
     }
