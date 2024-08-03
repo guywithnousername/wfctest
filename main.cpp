@@ -36,11 +36,15 @@ char choose(map<char, int> a) {
         tem += b.second;
     }
     int choice = rand(0, a['\0']);
-    for (auto it = v.rbegin(); it != v.rend(); it ++) {
+    auto it = v.rbegin();
+    for (; it != v.rend(); it ++) {
         if (choice >= (*it).first) {
             return (*it).second;
         }
     }
+    it --;
+    cout << "'" << (*it).second << "'\n";
+    return (*it).second;
 }
 
 void wfc(vector<vector<map<char, int>>> grid) {
@@ -97,7 +101,7 @@ void wfc(vector<vector<map<char, int>>> grid) {
         int x = dirs[dir].first;
         int y = dirs[dir].second;
         if (cy + y < 0 || cy + y >= n2 || cx + x < 0 || cx + x >= m2) continue;
-        cout << "x y " << x << " " << y << "\n";
+        cout << "x y " << cx + x << " " << cy + y << "\n";
         map<char, int> a = rules[poss][dir];
         cout << "a\n";
         map<char, int> b = grid[cy + y][cx + x];
@@ -173,6 +177,6 @@ int main() {
     s[a] = 1;
     s['\0'] ++;
    }
-   vector<vector<map<char, int>>> start (10, vector<map<char, int>> (10, s));
+   vector<vector<map<char, int>>> start (n2, vector<map<char, int>> (m2, s));
    wfc(start);
 }
