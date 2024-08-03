@@ -31,6 +31,7 @@ char choose(map<char, int> a) {
     vector<pair<int, char>> v (a.size());
     int tem = 1;
     for (pair<char, int> b : a) {
+        if (b.first == '\0') continue;
         v.push_back({tem, b.first});
         tem += b.second;
     }
@@ -98,7 +99,9 @@ void wfc(vector<vector<map<char, int>>> grid) {
         if (cy + y < 0 || cy + y >= n2 || cx + x < 0 || cx + x >= m2) continue;
         cout << "x y " << x << " " << y << "\n";
         map<char, int> a = rules[poss][dir];
+        cout << "a\n";
         map<char, int> b = grid[cy + y][cx + x];
+        cout << "b\n";
         map<char, int> ins = {};
         for (pair<char, int> tem : a) {
             if (b.find(tem.first) != b.end()) {
@@ -110,7 +113,7 @@ void wfc(vector<vector<map<char, int>>> grid) {
         cout << "Set ins\n";
     }
     cout << "Created copy\n";
-    // wfc(copy);
+    wfc(copy);
     // **********************************************
     return;
 }
