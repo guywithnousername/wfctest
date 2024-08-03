@@ -52,13 +52,13 @@ void wfc(vector<vector<map<char, int>>> grid) {
     // get entropy by checking how many choices there are. 
     for (int i = 0; i < n2; i ++) {
         for (int j = 0; j < m2; j ++) {
-            if (grid[i][j].size() == 0) return;
-            if (grid[i][j].size() == 1) continue;
+            if (grid[i][j].size() == 1) return;
+            if (grid[i][j].size() == 2) continue;
             ent[grid[i][j].size()].push_back({j, i});
             flag = false;
         }
     }
-
+    cout << "Recorded ents\n";
     if (flag) {
         // print out
         for (int i = 0; i < n2; i ++) {
@@ -72,14 +72,14 @@ void wfc(vector<vector<map<char, int>>> grid) {
         nums --;
         return;
     }
-
+    cout << "Checked flag\n";
     // pick a random tile with the lowest entropy (excluding tiles with 1 choice)
     vector<pair<int, int>> least = (*ent.begin()).second;
 
     lE = least[rand(0, least.size() - 1)];
     int cx = lE.first;
     int cy = lE.second;
-
+    cout << "Found cx cy\n";
     // finds and applies a random possibility
     /* **********************************************
     STILL NEEDS CHANGES HERE 
@@ -91,10 +91,12 @@ void wfc(vector<vector<map<char, int>>> grid) {
     char poss = choose(grid[cy][cx]);
     auto copy = grid;
     copy[cy][cx] = map<char, int> {{poss, 1}};
+    cout << "Got random choice\n";
     for (int dir = 0; dir < 8; dir ++) {
         int x = dirs[dir].first;
         int y = dirs[dir].second;
         if (cy + y < 0 || cy + y >= n2 || cx + x < 0 || cx + x >= m2) continue;
+        cout << "x y " << x << " " << y << "\n";
         map<char, int> a = rules[poss][dir];
         map<char, int> b = grid[cy + y][cx + x];
         map<char, int> ins = {};
@@ -103,9 +105,12 @@ void wfc(vector<vector<map<char, int>>> grid) {
                 ins[tem.first] = tem.second;
             }
         }
+        cout << "merged a and b\n";
         copy[cy + y][cx + x] = ins;
+        cout << "Set ins\n";
     }
-    wfc(copy);
+    cout << "Created copy\n";
+    // wfc(copy);
     // **********************************************
     return;
 }
