@@ -18,7 +18,6 @@ pair<int, int> dirs[8] = {{-1, 0}, {1, 0}, {-1, 1}, {1, 1},
 int n, m; // input
 int n2, m2; // output
 vector<vector<char>> ans;
-int nums; // number of grids created
 
 int rand(int st, int mx) { // random [st, mx]
     std::random_device rd;
@@ -47,7 +46,6 @@ char choose(map<char, int> a) {
 }
 
 bool wfc(vector<vector<map<char, int>>> grid) {
-    if (nums <= 0) return true; 
 
    // lists tiles with specific entropy
     map<int, vector<pair<int, int>>> ent;
@@ -68,13 +66,14 @@ bool wfc(vector<vector<map<char, int>>> grid) {
         // print out
         for (int i = 0; i < n2; i ++) {
             for (int j = 0; j < m2; j ++) {
-                ans[i][j] = (*(grid[i][j].begin())).first;
-                cout << ans[i][j] ;
+                auto it = grid[i][j].begin();
+                advance(it, 1);
+                ans[i][j] = (*(it)).first;
+                cout << ans[i][j];
             }
             cout << "\n";
         }
         cout << "----\n";
-        nums --;
         return true;
     }
     // pick a random tile with the lowest entropy (excluding tiles with 1 choice)
@@ -84,10 +83,6 @@ bool wfc(vector<vector<map<char, int>>> grid) {
     int cx = lE.first;
     int cy = lE.second;
     // finds and applies a random possibility
-    /* **********************************************
-    STILL NEEDS CHANGES HERE 
-    - remove nums variable
-    */
     bool bflag = true;
     set<char> no;
     while (bflag) {
@@ -124,7 +119,7 @@ bool wfc(vector<vector<map<char, int>>> grid) {
 
 int main() {
     // input 
-    cin >> n >> m >> n2 >> m2 >> nums;
+    cin >> n >> m >> n2 >> m2;
     grid = vector<vector<char>> (n, vector<char> (m));
     ans = vector<vector<char>> (n2, vector<char> (m2));
     for (int i = 0; i < n; i ++) {
