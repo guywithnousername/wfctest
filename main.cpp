@@ -107,7 +107,7 @@ bool wfc(vector<vector<map<char, int>>> grid) {
             copy[cy + y][cx + x] = ins;
         }
         if (!wfc(copy)) {
-            cout << "Rejection\n";
+            // rejection
             no.insert(poss);
             if (no.size() >= tiles.size()) return false;
         } else {
@@ -172,7 +172,6 @@ int main() {
     s[a] = 1;
     s['\0'] ++;
    }
-   cout << "starting wfc\n";
    vector<vector<map<char, int>>> start (n2, vector<map<char, int>> (m2, s));
    wfc(start);
 }
