@@ -69,11 +69,8 @@ bool wfc(vector<vector<map<char, int>>> grid) {
                 auto it = grid[i][j].begin();
                 advance(it, 1);
                 ans[i][j] = (*(it)).first;
-                cout << ans[i][j];
             }
-            cout << "\n";
         }
-        cout << "----\n";
         return true;
     }
     // pick a random tile with the lowest entropy (excluding tiles with 1 choice)
@@ -174,4 +171,14 @@ int main() {
    }
    vector<vector<map<char, int>>> start (n2, vector<map<char, int>> (m2, s));
    wfc(start);
+   for (int i = 0; i < n2; i ++) {
+    for (int j = 0; j < m2; j ++) {
+        cout << "\033[0m";
+        if (ans[i][j] == '.') cout << "\033[34m";
+        if (ans[i][j] == '~') cout << "\033[33m";
+        if (ans[i][j] == '#') cout << "\033[1m";
+        cout << ans[i][j];
+    }
+    cout << "\n";
+   }
 }
