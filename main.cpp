@@ -17,6 +17,7 @@ pair<int, int> dirs[8] = {{-1, 0}, {1, 0}, {-1, 1}, {1, 1},
 
 int n, m; // input
 int n2, m2; // output
+int nums;
 vector<vector<char>> ans;
 
 int rand(int st, int mx) { // random [st, mx]
@@ -116,7 +117,7 @@ bool wfc(vector<vector<map<char, int>>> grid) {
 
 int main() {
     // input 
-    cin >> n >> m >> n2 >> m2;
+    cin >> n >> m >> n2 >> m2 >> nums;
     grid = vector<vector<char>> (n, vector<char> (m));
     ans = vector<vector<char>> (n2, vector<char> (m2));
     for (int i = 0; i < n; i ++) {
@@ -170,15 +171,18 @@ int main() {
     s['\0'] ++;
    }
    vector<vector<map<char, int>>> start (n2, vector<map<char, int>> (m2, s));
-   wfc(start);
-   for (int i = 0; i < n2; i ++) {
-    for (int j = 0; j < m2; j ++) {
-        cout << "\033[0m";
-        if (ans[i][j] == '*') cout << "\033[33m";
-        if (ans[i][j] == '~') cout << "\033[34m";
-        if (ans[i][j] == '#') cout << "\033[1;32m";
-        cout << ans[i][j];
+   for (int i = 0; i < nums; i ++) {
+    wfc(start);
+    for (int i = 0; i < n2; i ++) {
+        for (int j = 0; j < m2; j ++) {
+            cout << "\033[0m";
+            if (ans[i][j] == '*') cout << "\033[33m";
+            if (ans[i][j] == '~') cout << "\033[34m";
+            if (ans[i][j] == '#') cout << "\033[1;32m";
+            cout << ans[i][j];
+        }
+        cout << "\n";
     }
-    cout << "\n";
+    cout << "----\n";
    }
 }
