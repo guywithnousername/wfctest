@@ -57,7 +57,10 @@ void wfc(vector<vector<map<char, int>>> grid) {
     // get entropy by checking how many choices there are. 
     for (int i = 0; i < n2; i ++) {
         for (int j = 0; j < m2; j ++) {
-            if (grid[i][j].size() == 1) return;
+            if (grid[i][j].size() == 1) {
+                cout << "Return: x y " << j << " " << i << "\n";
+                return;
+            }
             if (grid[i][j].size() == 2) continue;
             ent[grid[i][j].size()].push_back({j, i});
             flag = false;
@@ -94,29 +97,35 @@ void wfc(vector<vector<map<char, int>>> grid) {
     - remove nums variable
     */
     char poss = choose(grid[cy][cx]);
+    while (rules.find(poss) == rules.end()) {
+        poss = choose(grid[cy][cx]);
+    }
+    cout << "poss '" << poss << "'\n";
     auto copy = grid;
-    copy[cy][cx] = map<char, int> {{poss, 1}};
-    cout << "Got random choice\n";
+    copy[cy][cx] = map<char, int> {{poss, 1}, {'\0', 1}};
     for (int dir = 0; dir < 8; dir ++) {
         int x = dirs[dir].first;
         int y = dirs[dir].second;
         if (cy + y < 0 || cy + y >= n2 || cx + x < 0 || cx + x >= m2) continue;
         cout << "x y " << cx + x << " " << cy + y << "\n";
         map<char, int> a = rules[poss][dir];
-        cout << "a\n";
         map<char, int> b = grid[cy + y][cx + x];
-        cout << "b\n";
         map<char, int> ins = {};
         for (pair<char, int> tem : a) {
             if (b.find(tem.first) != b.end()) {
                 ins[tem.first] = tem.second;
             }
         }
-        cout << "merged a and b\n";
         copy[cy + y][cx + x] = ins;
         cout << "Set ins\n";
     }
     cout << "Created copy\n";
+    for (int i = 0; i < n2; i ++) {
+        for (int j = 0; j < m2; j ++) {
+            cout << copy[i][j].size() << " ";
+        }
+        cout << "\n";
+    }
     wfc(copy);
     // **********************************************
     return;
