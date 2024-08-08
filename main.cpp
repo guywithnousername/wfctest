@@ -63,6 +63,19 @@ bool wfc(vector<vector<map<char, int>>> grid) {
             flag = false;
         }
     }
+    for (int i = 0; i < n2; i ++) {
+        for (int j = 0; j < m2; j ++) {
+            cout << "[";
+            for (char t : tiles) {
+                if (grid[i][j].count(t)) {
+                    cout << t;
+                } else cout << " ";
+            }
+            cout << "]";
+        }
+        cout << "\n";
+    }
+    cout << "-----\n";
     if (flag) {
         // print out
         for (int i = 0; i < n2; i ++) {
@@ -105,9 +118,10 @@ bool wfc(vector<vector<map<char, int>>> grid) {
             copy[cy + y][cx + x] = ins;
         }
         if (!wfc(copy)) {
-            // rejection
             no.insert(poss);
-            if (no.size() >= tiles.size()) return false;
+            if (no.size() >= tiles.size()) {
+                return false;
+            }
         } else {
             bflag = false;
         }
