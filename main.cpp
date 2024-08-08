@@ -131,7 +131,7 @@ bool wfc(vector<vector<map<char, int>>> grid) {
                 cout << "rj " << cy << " " << cx << " " << poss << "\n";
             }
             no.insert(poss);
-            if (no.size() >= tiles.size()) {
+            if (no.size() >= grid[cy][cx].size() - 1) {
                 return false;
             }
         } else {
