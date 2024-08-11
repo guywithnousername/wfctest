@@ -45,7 +45,6 @@ char choose(map<char, int> a) {
     it --;
     return (*it).second;
 }
-int dorj = 50;
 bool wfc(vector<vector<map<char, int>>> grid) {
 
    // lists tiles with specific entropy
@@ -63,23 +62,23 @@ bool wfc(vector<vector<map<char, int>>> grid) {
             flag = false;
         }
     }
-    for (int i = 0; i < n2; i ++) {
-        for (int j = 0; j < m2; j ++) {
-            cout << "\033[0m";
-            if (grid[i][j].size() > 2) {
-                cout << "\033[1;31m";
-            } 
-            cout << "[";
-            for (char t : tiles) {
-                if (grid[i][j].count(t)) {
-                    cout << t;
-                } else cout << " ";
-            }
-            cout << "]";
-        }
-        cout << "\n";
-    }
-    cout << "\033[0m-----\n";
+    // for (int i = 0; i < n2; i ++) {
+        // for (int j = 0; j < m2; j ++) {
+            // cout << "\033[0m";
+            // if (grid[i][j].size() > 2) {
+            //     cout << "\033[1;31m";
+            // } 
+            // cout << "[";
+            // for (char t : tiles) {
+            //     if (grid[i][j].count(t)) {
+            //         cout << t;
+            //     } else cout << " ";
+            // }
+            // cout << "]";
+        // }
+        // cout << "\n";
+    // }
+    // cout << "\033[0m-----\n";
     if (flag) {
         // print out
         for (int i = 0; i < n2; i ++) {
@@ -126,10 +125,6 @@ bool wfc(vector<vector<map<char, int>>> grid) {
             copy[cy + y][cx + x] = ins;
         }
         if (!wfc(copy)) {
-            if (dorj > 0) {
-                dorj --;
-                cout << "rj " << cy << " " << cx << " " << poss << "\n";
-            }
             no.insert(poss);
             if (no.size() >= grid[cy][cx].size() - 1) {
                 return false;
