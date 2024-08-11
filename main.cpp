@@ -9,16 +9,9 @@
 
 using namespace std;
 
-vector<vector<char>> grid;
-vector<char> tiles = {};
-map<char, vector<map<char, int>>> rules;
 pair<int, int> dirs[8] = {{-1, 0}, {1, 0}, {-1, 1}, {1, 1}, 
 {0, 1}, {-1, -1}, {0, -1}, {1, -1}};
 
-int n, m; // input
-int n2, m2; // output
-int nums;
-vector<vector<char>> ans;
 
 int rand(int st, int mx) { // random [st, mx]
     std::random_device rd;
@@ -45,8 +38,7 @@ char choose(map<char, int> a) {
     it --;
     return (*it).second;
 }
-bool wfc(vector<vector<map<char, int>>> grid) {
-
+vector<vector<char>> wfc(vector<vector<map<char, int>>> grid, map<char, vector<map<char, int>>> rules, int n2, int m2) {
    // lists tiles with specific entropy
     map<int, vector<pair<int, int>>> ent;
     pair<int, int> lE = {-1, -1}; // leastEntropy
@@ -55,7 +47,7 @@ bool wfc(vector<vector<map<char, int>>> grid) {
     for (int i = 0; i < n2; i ++) {
         for (int j = 0; j < m2; j ++) {
             if (grid[i][j].size() == 1) {
-                return false;
+                return {};
             }
             if (grid[i][j].size() == 2) continue;
             ent[grid[i][j].size()].push_back({j, i});
@@ -81,6 +73,7 @@ bool wfc(vector<vector<map<char, int>>> grid) {
     // cout << "\033[0m-----\n";
     if (flag) {
         // print out
+        vector<vector<char>> ans (n2, vector<char> (m2));
         for (int i = 0; i < n2; i ++) {
             for (int j = 0; j < m2; j ++) {
                 auto it = grid[i][j].begin();
@@ -88,7 +81,7 @@ bool wfc(vector<vector<map<char, int>>> grid) {
                 ans[i][j] = (*(it)).first;
             }
         }
-        return true;
+        return ans;
     }
     // pick a random tile with the lowest entropy (excluding tiles with 1 choice)
     vector<pair<int, int>> least = (*ent.begin()).second;
@@ -124,46 +117,48 @@ bool wfc(vector<vector<map<char, int>>> grid) {
             ins['\0'] = sz;
             copy[cy + y][cx + x] = ins;
         }
-        if (!wfc(copy)) {
+        if (wfc(copy, rules, n2, m2).size()) {
             no.insert(poss);
             if (no.size() >= grid[cy][cx].size() - 1) {
-                return false;
+                return {};
             }
         } else {
             bflag = false;
         }
     }
-    return true;
+    return {{1}};
 }
 
-int main() {
-    // input 
-    cin >> n >> m >> n2 >> m2 >> nums;
-    grid = vector<vector<char>> (n, vector<char> (m));
-    ans = vector<vector<char>> (n2, vector<char> (m2));
+vector<char> gettiles(vector<vector<char>> grid) {
+    vector<char> tiles = {};
+    int n = grid.size(), m = grid[0].size();
     for (int i = 0; i < n; i ++) {
         for (int j = 0; j < m; j ++) {
-            cin >> grid[i][j];
             if (find(tiles.begin(), tiles.end(), grid[i][j]) == tiles.end()) {
                 tiles.push_back(grid[i][j]);
             }
         }
     }
+    return tiles;
+}
 
+map<char, vector<map<char, int>>> getrules(vector<vector<char>> grid) {
+    map<char, vector<map<char, int>>> rules;
+    vector<char> tiles = gettiles(grid);
     // get rules
     for (char tile : tiles) {
         map<char, int> tem;
         tem['\0'] = 0; // no one can use this, so it is the total. 
         rules[tile] = vector<map<char, int>> (8, tem);
     }
-    for (int i = 0; i < n; i ++) {
-        for (int j = 0; j < m; j ++) {
+    for (int i = 0; i < grid.size(); i ++) {
+        for (int j = 0; j < grid[0].size(); j ++) {
             for (int dir = 0; dir < 8; dir ++) {
                 int x = dirs[dir].first;
                 int y = dirs[dir].second;
                 if (x == 0 && y == 0) continue;
-                if (j + x < 0 || j + x >= m) continue;
-                if (i + y < 0 || i + y >= n) continue;
+                if (j + x < 0 || j + x >= grid[0].size()) continue;
+                if (i + y < 0 || i + y >= grid.size()) continue;
                 char tile = grid[i][j];
                 char type = grid[i + y][j + x];
                 rules[tile][dir][type] ++;
@@ -171,29 +166,36 @@ int main() {
             }
         }
     }
+    return rules;
+}
 
-    // print out rules
-    /*
-    for (auto a : rules) {
-        cout << a.first << "\n";
-        for (int dir = 0; dir < 8; dir ++) {
-            cout << "   xy " << dirs[dir].first <<
-            " " << dirs[dir].second << "\n      ";
-            for (char i : a.second[dir]) cout << i << " ";
-            cout << "\n";
+vector<vector<char>> generate(vector<vector<char>> grid, int n2, int m2) {
+    vector<vector<char>> ans (n2, vector<char> (m2));
+    vector<char> tiles = gettiles(grid);
+    map<char, vector<map<char, int>>> rules = getrules(grid);
+    // creates arguments and uses the function.
+    map<char, int> s; 
+    for (char a : tiles) {
+        s[a] = 1;
+        s['\0'] ++;
+    }
+    vector<vector<map<char, int>>> start (n2, vector<map<char, int>> (m2, s));
+    wfc(start, rules, n2, m2);
+}
+
+int main() {
+    int n, m; // input
+    int n2, m2; // output
+    int nums; 
+    cin >> n >> m >> n2 >> m2 >> nums;
+    vector<vector<char>> grid (n, vector<char> (m));
+    for (int i = 0; i < n; i ++) {
+        for (int j = 0; j < m; j ++) {
+            cin >> grid[i][j];
+            
         }
     }
-    */
-
-   // creates arguments and uses the function.
-   map<char, int> s; 
-   for (char a : tiles) {
-    s[a] = 1;
-    s['\0'] ++;
-   }
-   vector<vector<map<char, int>>> start (n2, vector<map<char, int>> (m2, s));
-   for (int i = 0; i < nums; i ++) {
-    wfc(start);
+    vector<vector<char>> ans = generate(grid, n2, m2);
     for (int i = 0; i < n2; i ++) {
         for (int j = 0; j < m2; j ++) {
             cout << "\033[0m";
@@ -205,5 +207,4 @@ int main() {
         cout << "\n";
     }
     cout << "----\n";
-   }
 }
