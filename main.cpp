@@ -55,20 +55,20 @@ vector<vector<char>> wfc(vector<vector<map<char, int>>> grid, map<char, vector<m
         }
     }
     // for (int i = 0; i < n2; i ++) {
-        // for (int j = 0; j < m2; j ++) {
-            // cout << "\033[0m";
-            // if (grid[i][j].size() > 2) {
-            //     cout << "\033[1;31m";
-            // } 
-            // cout << "[";
-            // for (char t : tiles) {
-            //     if (grid[i][j].count(t)) {
-            //         cout << t;
-            //     } else cout << " ";
-            // }
-            // cout << "]";
-        // }
-        // cout << "\n";
+    //     for (int j = 0; j < m2; j ++) {
+    //         cout << "\033[0m";
+    //         if (grid[i][j].size() > 2) {
+    //             cout << "\033[1;31m";
+    //         } 
+    //         cout << "[";
+    //         for (char t : tiles) {
+    //             if (grid[i][j].count(t)) {
+    //                 cout << t;
+    //             } else cout << " ";
+    //         }
+    //         cout << "]";
+    //     }
+    //     cout << "\n";
     // }
     // cout << "\033[0m-----\n";
     if (flag) {
@@ -90,9 +90,8 @@ vector<vector<char>> wfc(vector<vector<map<char, int>>> grid, map<char, vector<m
     int cx = lE.first;
     int cy = lE.second;
     // finds and applies a random possibility
-    bool bflag = true;
     set<char> no;
-    while (bflag) {
+    while (1) {
         char poss = choose(grid[cy][cx]);
         while (rules.find(poss) == rules.end() && !no.count(poss)) {
             poss = choose(grid[cy][cx]);
@@ -117,16 +116,17 @@ vector<vector<char>> wfc(vector<vector<map<char, int>>> grid, map<char, vector<m
             ins['\0'] = sz;
             copy[cy + y][cx + x] = ins;
         }
-        if (wfc(copy, rules, n2, m2).size()) {
+        vector<vector<char>> res = wfc(copy, rules, n2, m2);
+        if (res.size() < 1) {
             no.insert(poss);
             if (no.size() >= grid[cy][cx].size() - 1) {
                 return {};
             }
         } else {
-            bflag = false;
+            return res;
         }
     }
-    return {{1}};
+    return {};
 }
 
 vector<char> gettiles(vector<vector<char>> grid) {
@@ -180,7 +180,7 @@ vector<vector<char>> generate(vector<vector<char>> grid, int n2, int m2) {
         s['\0'] ++;
     }
     vector<vector<map<char, int>>> start (n2, vector<map<char, int>> (m2, s));
-    wfc(start, rules, n2, m2);
+    return wfc(start, rules, n2, m2);
 }
 
 int main() {
