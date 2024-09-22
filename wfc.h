@@ -141,6 +141,13 @@ vector<char> gettiles(vector<vector<char>> grid) {
         }
     }
     return tiles;
+} // overloading this to work with rules
+vector<char> gettiles(map<char, vector<map<char, int>>> rules) {
+    vector<char> tiles = {};
+    for (auto a : rules) {
+        tiles.push_back(a.first);
+    }
+    return tiles;
 }
 
 map<char, vector<map<char, int>>> getrules(vector<vector<char>> grid) {
@@ -172,12 +179,8 @@ map<char, vector<map<char, int>>> getrules(vector<vector<char>> grid) {
     return rules;
 }
 
-vector<vector<char>> generate(vector<vector<char>> grid, int n2, int m2, vector<char> tiles = {}, 
-map<char, vector<map<char, int>>> rules = {}) {
-    vector<vector<char>> ans (n2, vector<char> (m2));
-    if (tiles.size() <= 0) tiles = gettiles(grid);
-    if (rules.size() <= 0) rules = getrules(grid);
-    // creates arguments and uses the function.
+vector<vector<char>> getans(int n2, int m2, map<char, vector<map<char, int>>> rules) {
+    vector<char> tiles = gettiles(rules);
     map<char, int> s; 
     for (char a : tiles) {
         s[a] = 1;
@@ -185,5 +188,12 @@ map<char, vector<map<char, int>>> rules = {}) {
     }
     vector<vector<map<char, int>>> start (n2, vector<map<char, int>> (m2, s));
     return wfc(start, rules, tiles, n2, m2);
+}
+
+vector<vector<char>> generate(vector<vector<char>> grid, int n2, int m2, map<char, vector<map<char, int>>> rules = {}) {
+    vector<vector<char>> ans (n2, vector<char> (m2));
+    if (rules.size() <= 0) rules = getrules(grid);
+    // creates arguments and uses the function.
+    return getans(n2, m2, rules);
 }
 #endif
