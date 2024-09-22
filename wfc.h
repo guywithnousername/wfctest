@@ -172,10 +172,11 @@ map<char, vector<map<char, int>>> getrules(vector<vector<char>> grid) {
     return rules;
 }
 
-vector<vector<char>> generate(vector<vector<char>> grid, int n2, int m2) {
+vector<vector<char>> generate(vector<vector<char>> grid, int n2, int m2, vector<char> tiles = {}, 
+map<char, vector<map<char, int>>> rules = {}) {
     vector<vector<char>> ans (n2, vector<char> (m2));
-    vector<char> tiles = gettiles(grid);
-    map<char, vector<map<char, int>>> rules = getrules(grid);
+    if (tiles.size() <= 0) tiles = gettiles(grid);
+    if (rules.size() <= 0) rules = getrules(grid);
     // creates arguments and uses the function.
     map<char, int> s; 
     for (char a : tiles) {
