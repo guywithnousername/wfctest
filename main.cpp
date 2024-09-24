@@ -26,8 +26,8 @@ map<char, vector<map<char, int>>> cinrules(string path) {
 }
 
 int HEIGHT = 3, WIDTH = 4;
-int BSIDE = 2; // side length of a part
-int DIST = 1; // length between parts
+int BSIDE = 5; // side length of a part
+int DIST = 3; // length between parts
 
 int main() {
     map<char, map<char, vector<map<char, int>>>> ruleset;
