@@ -1,4 +1,4 @@
 3 3
-aab
-baa
-aab
+cab
+bcc
+cab
