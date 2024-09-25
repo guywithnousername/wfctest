@@ -150,10 +150,9 @@ vector<char> gettiles(map<char, vector<map<char, int>>> rules) {
     return tiles;
 }
 
-map<char, vector<map<char, int>>> getrules(vector<vector<char>> grid) {
+map<char, vector<map<char, int>>> getrules(vector<vector<char>> grid, map<char, vector<map<char, int>>> rules = {}) {
     pair<int, int> dirs[8] = {{-1, 0}, {1, 0}, {-1, 1}, {1, 1}, 
 {0, 1}, {-1, -1}, {0, -1}, {1, -1}};
-    map<char, vector<map<char, int>>> rules;
     vector<char> tiles = gettiles(grid);
     // get rules
     for (char tile : tiles) {
@@ -179,14 +178,17 @@ map<char, vector<map<char, int>>> getrules(vector<vector<char>> grid) {
     return rules;
 }
 
-vector<vector<char>> getans(int n2, int m2, map<char, vector<map<char, int>>> rules) {
+vector<vector<char>> getans(int n2, int m2, map<char, vector<map<char, int>>> rules, vector<vector<map<char, int>>> start = {}) {
     vector<char> tiles = gettiles(rules);
+    if (start.size()) {
+        return wfc(start, rules, tiles, n2, m2);
+    }
     map<char, int> s; 
     for (char a : tiles) {
         s[a] = 1;
         s['\0'] ++;
     }
-    vector<vector<map<char, int>>> start (n2, vector<map<char, int>> (m2, s));
+    start = vector<vector<map<char, int>>> (n2, vector<map<char, int>> (m2, s));
     return wfc(start, rules, tiles, n2, m2);
 }
 

@@ -25,9 +25,13 @@ map<char, vector<map<char, int>>> cinrules(string path) {
     return getrules(grid);
 }
 
-int HEIGHT = 3, WIDTH = 4;
-int BSIDE = 5; // side length of a part
-int DIST = 3; // length between parts
+int HEIGHT = 3, WIDTH = 3;
+int BSIDE = 2; // side length of a part
+int DIST = 1; // length between parts
+
+vector<vector<char>> stitch(map<char, vector<map<char, int>>> rules, vector<vector<char>> inp, int x1, int y1, int x2, int y2) {
+    return inp;
+}
 
 int main() {
     map<char, map<char, vector<map<char, int>>>> ruleset;

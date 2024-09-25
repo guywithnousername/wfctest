@@ -1,4 +1,5 @@
-3 3
-cab
-bcc
-cab
+4 5
+abccc
+aaabc
+aabcc
+abccc
