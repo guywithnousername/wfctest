@@ -26,11 +26,29 @@ map<char, vector<map<char, int>>> cinrules(string path) {
 }
 
 int HEIGHT = 3, WIDTH = 3;
-int BSIDE = 2; // side length of a part
+int BSIDE = 3; // side length of a part
 int DIST = 1; // length between parts
 
-vector<vector<char>> stitch(map<char, vector<map<char, int>>> rules, vector<vector<char>> inp, int x1, int y1, int x2, int y2) {
-    return inp;
+vector<vector<char>> stitch(vector<vector<char>> ans, map<char, vector<map<char, int>>> rules, int x1, int y1, int x2, int y2) {
+    // currently not using x1, y1, x2, y2
+    cout << "-----\n";
+    for (int y = 0; y < HEIGHT; y ++) {
+        for (int x = 0; x < WIDTH; x ++) {
+            cout << "x y " << x << " " << y << "\n";
+            int sy = max(0, (y - 1) * (BSIDE + DIST));
+            int sx = max(0, (x - 1) * (BSIDE + DIST));
+            int ey = min(int(ans.size() - 1), (y + 1) * (BSIDE + DIST));
+            int ex = min(int(ans[0].size() - 1), (x + 1) * (BSIDE + DIST));
+            for (int i = sy; i <= ey; i ++) {
+                for (int j = sx; j <= ex; j ++) {
+                    cout << ans[i][j];
+                }
+                cout << "\n";
+            }
+            cout << "-----\n";
+        }
+    }
+    return ans;
 }
 
 int main() {
@@ -70,4 +88,5 @@ int main() {
         }
         cout << "\n";
     }
+    stitch(ans, rules, 0, 0, WIDTH, HEIGHT);
 }
