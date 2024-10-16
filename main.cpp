@@ -31,6 +31,7 @@ int DIST = 1; // length between parts
 
 vector<vector<char>> stitch(vector<vector<char>> ans, map<char, vector<map<char, int>>> rules, int x1, int y1, int x2, int y2) {
     // currently not using x1, y1, x2, y2
+    map<char, vector<map<char, int>>> all = cinrules("map/all.txt");
     cout << "-----\n";
     for (int y = 0; y < HEIGHT; y ++) {
         for (int x = 0; x < WIDTH; x ++) {
@@ -42,6 +43,22 @@ vector<vector<char>> stitch(vector<vector<char>> ans, map<char, vector<map<char,
             for (int i = sy; i <= ey; i ++) {
                 for (int j = sx; j <= ex; j ++) {
                     cout << ans[i][j];
+                }
+                cout << "\n";
+            }
+            cout << "new:\n";
+            int distx = (ex - sx + 1), disty = (ey - sy + 1);
+            vector<vector<map<char, int>>> old (disty, vector<map<char, int>> (distx));
+            for (int i = sy; i <= ey; i ++) {
+                for (int j = sx; j <= ex; j ++) {
+                    int tem = ans[i][j];
+                    old[i - sy][j - sy] = {{tem, 1}, {'\0', 1}};
+                }
+            }
+            vector<vector<char>> next = getans(disty, distx, all, old);
+            for (int i = 0; i < disty; i ++) {
+                for (int j = 0; j < distx; j ++) {
+                    cout << next[i][j];
                 }
                 cout << "\n";
             }
