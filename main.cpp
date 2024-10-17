@@ -30,8 +30,12 @@ int BSIDE = 3; // side length of a part
 int DIST = 1; // length between parts
 
 vector<vector<char>> stitch(vector<vector<char>> ans, map<char, vector<map<char, int>>> rules, int x1, int y1, int x2, int y2) {
-    // currently not using x1, y1, x2, y2
+    // currently not using x1, y1, x2, y2 or rules
     map<char, vector<map<char, int>>> all = cinrules("map/all.txt");
+    vector<char> tiles = gettiles(ans);
+    map<char, int> alltile;
+    for (char i : tiles) alltile[i] = 1;
+    alltile['\0'] = tiles.size();
     cout << "-----\n";
     for (int y = 0; y < HEIGHT; y ++) {
         for (int x = 0; x < WIDTH; x ++) {
@@ -52,7 +56,11 @@ vector<vector<char>> stitch(vector<vector<char>> ans, map<char, vector<map<char,
             for (int i = sy; i <= ey; i ++) {
                 for (int j = sx; j <= ex; j ++) {
                     int tem = ans[i][j];
-                    old[i - sy][j - sy] = {{tem, 1}, {'\0', 1}};
+                    if (tem == ' ') {
+                        old[i - sy][j - sy] = alltile;
+                    } else {
+                        old[i - sy][j - sy] = {{tem, 1}, {'\0', 1}};
+                    }
                 }
             }
             vector<vector<char>> next = getans(disty, distx, all, old);
