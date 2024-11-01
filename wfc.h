@@ -118,7 +118,7 @@ vector<vector<char>> wfc(vector<vector<map<char, int>>> grid, map<char, vector<m
             copy[cy + y][cx + x] = ins;
         }
         vector<vector<char>> res = wfc(copy, rules, tiles, n2, m2);
-        if (res.size() < 1) {
+        if (res.size() <= 1) {
             no.insert(poss);
             if (DEBUG_REJECT) {
                 if (DEBUG_REJECT_MAP) {

@@ -63,6 +63,17 @@ vector<vector<char>> stitch(vector<vector<char>> ans, map<char, vector<map<char,
                     }
                 }
             }
+            /*
+            for (auto a : all) {
+                cout << a.first << "\n";
+                for (int i = 0; i < 8; i ++) {
+                    cout << "   dir " << i + 1 << "\n";
+                    for (auto b : a.second[i]) {
+                        cout << "       " << b.first << " " << b.second << "\n";
+                    }
+                }
+            }
+            */
             vector<vector<char>> next = getans(disty, distx, all, old);
             for (int i = 0; i < disty; i ++) {
                 for (int j = 0; j < distx; j ++) {
