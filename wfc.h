@@ -7,7 +7,8 @@
 #include <vector>
 using namespace std;
 bool DEBUG_MAP = false;
-bool DEBUG_REJECT = false;
+bool DEBUG_REJECT = true;
+bool DEBUG_REJECT_MAP = true;
 
 int rand(int st, int mx) { // random [st, mx]
     random_device rd;
@@ -119,7 +120,29 @@ vector<vector<char>> wfc(vector<vector<map<char, int>>> grid, map<char, vector<m
         vector<vector<char>> res = wfc(copy, rules, tiles, n2, m2);
         if (res.size() < 1) {
             no.insert(poss);
-            if (DEBUG_REJECT) cout << "reject\n";
+            if (DEBUG_REJECT) {
+                if (DEBUG_REJECT_MAP) {
+                    for (int i = 0; i < n2; i ++) {
+                        for (int j = 0; j < m2; j ++) {
+                            cout << "\033[0m";
+                            if (grid[i][j].size() > 2) {
+                                cout << "\033[1;31m";
+                            } 
+                            cout << "[";
+                            for (char t : tiles) {
+                                if (grid[i][j].count(t)) {
+                                    cout << t;
+                                } else cout << " ";
+                            }
+                            cout << "]";
+                        }
+                        cout << "\n";
+                    }
+                    cout << "\033[0m-----\n";
+                } else {
+                    cout << "reject\n";
+                }
+            }
             if (no.size() >= grid[cy][cx].size() - 1) {
                 return {};
             }
