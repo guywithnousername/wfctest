@@ -7,11 +7,14 @@
 #include <random>
 #include <algorithm>
 
-#include "wfc.h"
+#include "wfc.h" // includes a module
 
 using namespace std;
 
 map<char, vector<map<char, int>>> cinrules(string path) {
+    /*
+    Uses getrules() and freopen() to get the rules from a file
+    */
     const char* cpath = path.c_str();
     FILE *fp = freopen(cpath, "r", stdin);
     int n, m; cin >> n >> m;
@@ -21,27 +24,34 @@ map<char, vector<map<char, int>>> cinrules(string path) {
             cin >> grid[i][j];
         }
     }
-    fclose(fp);
+    fclose(fp); // needed to tidy things up 
     return getrules(grid);
 }
 
-int HEIGHT = 3, WIDTH = 3;
+int HEIGHT = 3, WIDTH = 3; // how many different parts are here.
 int BSIDE = 3; // side length of a part
 int DIST = 1; // length between parts
 
-vector<vector<char>> stitch(vector<vector<char>> ans, map<char, vector<map<char, int>>> rules, int x1, int y1, int x2, int y2) {
-    // currently not using x1, y1, x2, y2 or rules
+vector<vector<char>> stitch(vector<vector<char>> ans, map<char, vector<map<char, int>>> rules) {
+    /*
+    A function that makes use of the wfc.h functions to stitch together a larger map. 
+    */
+    // currently not using rules: will add to help select different files
+    // potentially add HEIGHT, WIDTH, BSIDE, and DIST into the function.
+
     map<char, vector<map<char, int>>> all = cinrules("map/all.txt");
     vector<char> tiles = gettiles(ans);
-    map<char, int> alltile;
+    map<char, int> alltile; // set of rules allowing everything. 
     for (char i : tiles) alltile[i] = 1;
     alltile['\0'] = tiles.size();
     cout << "-----\n";
     for (int y = 0; y < HEIGHT; y ++) {
         for (int x = 0; x < WIDTH; x ++) {
             cout << "x y " << x << " " << y << "\n";
+            // starting corners
             int sy = max(0, (y - 1) * (BSIDE + DIST));
             int sx = max(0, (x - 1) * (BSIDE + DIST));
+            // ending corners
             int ey = min(int(ans.size() - 1), (y + 1) * (BSIDE + DIST));
             int ex = min(int(ans[0].size() - 1), (x + 1) * (BSIDE + DIST));
             for (int i = sy; i <= ey; i ++) {
@@ -52,6 +62,7 @@ vector<vector<char>> stitch(vector<vector<char>> ans, map<char, vector<map<char,
             }
             cout << "new:\n";
             int distx = (ex - sx + 1), disty = (ey - sy + 1);
+            // old stores a slice of the 'ans' matrix. Smaller size for wfc to work on
             vector<vector<map<char, int>>> old (disty, vector<map<char, int>> (distx));
             for (int i = sy; i <= ey; i ++) {
                 for (int j = sx; j <= ex; j ++) {
@@ -63,6 +74,7 @@ vector<vector<char>> stitch(vector<vector<char>> ans, map<char, vector<map<char,
                     }
                 }
             }
+            // prints out rules
             /*
             for (auto a : all) {
                 cout << a.first << "\n";
@@ -74,6 +86,7 @@ vector<vector<char>> stitch(vector<vector<char>> ans, map<char, vector<map<char,
                 }
             }
             */
+           // new thing to replace 'ans' matrix's part with
             vector<vector<char>> next = getans(disty, distx, all, old);
             for (int i = 0; i < disty; i ++) {
                 for (int j = 0; j < distx; j ++) {
@@ -124,5 +137,5 @@ int main() {
         }
         cout << "\n";
     }
-    stitch(ans, rules, 0, 0, WIDTH, HEIGHT);
+    stitch(ans, rules);
 }

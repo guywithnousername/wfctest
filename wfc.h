@@ -11,6 +11,9 @@ bool DEBUG_REJECT = true;
 bool DEBUG_REJECT_MAP = true;
 
 int rand(int st, int mx) { // random [st, mx]
+    /*
+    Returns a random number between st (start) and mx (max)
+    */
     random_device rd;
     mt19937 gen(rd());
     uniform_int_distribution<> distrib (st, mx);
@@ -18,25 +21,33 @@ int rand(int st, int mx) { // random [st, mx]
 }
 
 char choose(map<char, int> a) {
-    vector<pair<int, char>> v (a.size());
+    /*
+    Returns a number based on the probablilities given by a section of a rules list
+    */
+    vector<pair<int, char>> v (a.size()); 
     int tem = 1;
     for (pair<char, int> b : a) {
         if (b.first == '\0') continue;
         v.push_back({tem, b.first});
         tem += b.second;
     }
+    // creates a vector that stores the items of the section
     int choice = rand(0, a['\0']);
     auto it = v.rbegin();
-    for (; it != v.rend(); it ++) {
+    for (; it != v.rend(); it ++) { 
+        // loops through possibilities and returns if meets it
         if (choice >= (*it).first) {
-            return (*it).second;
+            return (*it).second; 
         }
     }
     it --;
     return (*it).second;
 }
 vector<vector<char>> wfc(vector<vector<map<char, int>>> grid, map<char, vector<map<char, int>>> rules, vector<char> tiles, int n2, int m2) {
-   // lists tiles with specific entropy
+   /*
+   The main function, it fills in a the grid given a set of rules
+   */
+    // lists tiles with specific entropy
     map<int, vector<pair<int, int>>> ent;
     pair<int, int> dirs[8] = {{-1, 0}, {1, 0}, {-1, 1}, {1, 1}, 
 {0, 1}, {-1, -1}, {0, -1}, {1, -1}};
@@ -93,6 +104,7 @@ vector<vector<char>> wfc(vector<vector<map<char, int>>> grid, map<char, vector<m
     // finds and applies a random possibility
     set<char> no;
     while (1) {
+        // gets the possibility
         char poss = choose(grid[cy][cx]);
         while (rules.find(poss) == rules.end() && !no.count(poss)) {
             poss = choose(grid[cy][cx]);
@@ -103,8 +115,8 @@ vector<vector<char>> wfc(vector<vector<map<char, int>>> grid, map<char, vector<m
             int x = dirs[dir].first;
             int y = dirs[dir].second;
             if (cy + y < 0 || cy + y >= n2 || cx + x < 0 || cx + x >= m2) continue;
-            map<char, int> a = rules[poss][dir];
-            map<char, int> b = grid[cy + y][cx + x];
+            map<char, int> a = rules[poss][dir]; // from rules list
+            map<char, int> b = grid[cy + y][cx + x]; // current possibilities
             map<char, int> ins = {};
             int sz = 0;
             for (pair<char, int> tem : a) {
@@ -114,10 +126,14 @@ vector<vector<char>> wfc(vector<vector<map<char, int>>> grid, map<char, vector<m
                     sz += tem.second;
                 }
             }
+            // narrows down possibilities
             ins['\0'] = sz;
             copy[cy + y][cx + x] = ins;
         }
+        // recursion
         vector<vector<char>> res = wfc(copy, rules, tiles, n2, m2);
+        // means that the only element is the one showing
+        // the size, so no possibilities. Rejection happens as a result
         if (res.size() <= 1) {
             no.insert(poss);
             if (DEBUG_REJECT) {
@@ -147,13 +163,18 @@ vector<vector<char>> wfc(vector<vector<map<char, int>>> grid, map<char, vector<m
                 return {};
             }
         } else {
+            // return answer
             return res;
         }
     }
+    // wrong answer
     return {};
 }
 
 vector<char> gettiles(vector<vector<char>> grid) {
+    /*
+    Gets all the listed tiles of a grid
+    */
     vector<char> tiles = {};
     int n = grid.size(), m = grid[0].size();
     for (int i = 0; i < n; i ++) {
@@ -166,6 +187,9 @@ vector<char> gettiles(vector<vector<char>> grid) {
     return tiles;
 } // overloading this to work with rules
 vector<char> gettiles(map<char, vector<map<char, int>>> rules) {
+    /*
+    Gets the tiles from a set of rules
+    */
     vector<char> tiles = {};
     for (auto a : rules) {
         tiles.push_back(a.first);
@@ -174,10 +198,13 @@ vector<char> gettiles(map<char, vector<map<char, int>>> rules) {
 }
 
 map<char, vector<map<char, int>>> getrules(vector<vector<char>> grid, map<char, vector<map<char, int>>> rules = {}) {
+    /*
+    Infers rules from an example grid that is already filled
+    */
     pair<int, int> dirs[8] = {{-1, 0}, {1, 0}, {-1, 1}, {1, 1}, 
-{0, 1}, {-1, -1}, {0, -1}, {1, -1}};
+{0, 1}, {-1, -1}, {0, -1}, {1, -1}}; // different directions: list works in any order
     vector<char> tiles = gettiles(grid);
-    // get rules
+    // generate empty set of rules
     for (char tile : tiles) {
         map<char, int> tem;
         tem['\0'] = 0; // no one can use this, so it is the total. 
@@ -186,6 +213,7 @@ map<char, vector<map<char, int>>> getrules(vector<vector<char>> grid, map<char, 
     for (int i = 0; i < grid.size(); i ++) {
         for (int j = 0; j < grid[0].size(); j ++) {
             for (int dir = 0; dir < 8; dir ++) {
+                // count the number of occurrences in each direction
                 int x = dirs[dir].first;
                 int y = dirs[dir].second;
                 if (x == 0 && y == 0) continue;
@@ -202,10 +230,14 @@ map<char, vector<map<char, int>>> getrules(vector<vector<char>> grid, map<char, 
 }
 
 vector<vector<char>> getans(int n2, int m2, map<char, vector<map<char, int>>> rules, vector<vector<map<char, int>>> start = {}) {
+    /*
+    Short function that combines multiple functions into one
+    */
     vector<char> tiles = gettiles(rules);
-    if (start.size()) {
+    if (start.size()) { // checks if start is filled out
         return wfc(start, rules, tiles, n2, m2);
     }
+    // otherwise, makes its own start function.
     map<char, int> s; 
     for (char a : tiles) {
         s[a] = 1;
@@ -216,6 +248,9 @@ vector<vector<char>> getans(int n2, int m2, map<char, vector<map<char, int>>> ru
 }
 
 vector<vector<char>> generate(vector<vector<char>> grid, int n2, int m2, map<char, vector<map<char, int>>> rules = {}) {
+    /*
+    Combines getrules and getans: the most convenient function here. 
+    */
     vector<vector<char>> ans (n2, vector<char> (m2));
     if (rules.size() <= 0) rules = getrules(grid);
     // creates arguments and uses the function.
