@@ -6,9 +6,9 @@
 #include <set>
 #include <vector>
 using namespace std;
-bool DEBUG_MAP = false;
-bool DEBUG_REJECT = true;
-bool DEBUG_REJECT_MAP = true;
+bool DEBUG_MAP = true;
+bool DEBUG_REJECT = false;
+bool DEBUG_REJECT_MAP = false;
 
 int rand(int st, int mx) { // random [st, mx]
     /*
@@ -43,6 +43,39 @@ char choose(map<char, int> a) {
     it --;
     return (*it).second;
 }
+
+vector<vector<map<char, int>>> enforce(vector<vector<map<char, int>>> grid, map<char, vector<map<char, int>>> rules) {
+    /*
+    Loops through each tile and checks rules on them. 
+    */
+    pair<int, int> dirs[8] = {{-1, 0}, {1, 0}, {-1, 1}, {1, 1}, 
+{0, 1}, {-1, -1}, {0, -1}, {1, -1}};
+    auto copy = grid;
+    for (int cy = 0; cy < grid.size(); cy ++) {
+        for (int cx = 0; cx < grid[0].size(); cx ++) {
+            for (int dir = 0; dir < 8; dir ++) {
+                int x = dirs[dir].first;
+                int y = dirs[dir].second;
+                if (cy + y < 0 || cy + y >= grid.size() || cx + x < 0 || cx + x >= m2) continue;
+                map<char, int> a = {}; // possibilities from rules list
+                map<char, int> b = grid[cy + y][cx + x]; // current possibilities
+                map<char, int> ins = {};
+                int sz = 0;
+                for (pair<char, int> tem : a) {
+                    if (tem.first == '\0') continue;
+                    if (b.find(tem.first) != b.end()) {
+                        ins[tem.first] = tem.second;
+                        sz += tem.second;
+                    }
+                }
+                // narrows down possibilities
+                ins['\0'] = sz;
+                copy[cy + y][cx + x] = ins;
+            }
+        }
+    }
+}
+
 vector<vector<char>> wfc(vector<vector<map<char, int>>> grid, map<char, vector<map<char, int>>> rules, vector<char> tiles, int n2, int m2) {
    /*
    The main function, it fills in a the grid given a set of rules
@@ -104,32 +137,17 @@ vector<vector<char>> wfc(vector<vector<map<char, int>>> grid, map<char, vector<m
     // finds and applies a random possibility
     set<char> no;
     while (1) {
+        // trying to solve problem that choose keeps outputting \0
+        if (no.size() >= grid[cy][cx].size() - 1) {
+                return {};
+        }
         // gets the possibility
         char poss = choose(grid[cy][cx]);
         while (rules.find(poss) == rules.end() && !no.count(poss)) {
             poss = choose(grid[cy][cx]);
         }
-        auto copy = grid;
-        copy[cy][cx] = map<char, int> {{poss, 1}, {'\0', 1}};
-        for (int dir = 0; dir < 8; dir ++) {
-            int x = dirs[dir].first;
-            int y = dirs[dir].second;
-            if (cy + y < 0 || cy + y >= n2 || cx + x < 0 || cx + x >= m2) continue;
-            map<char, int> a = rules[poss][dir]; // from rules list
-            map<char, int> b = grid[cy + y][cx + x]; // current possibilities
-            map<char, int> ins = {};
-            int sz = 0;
-            for (pair<char, int> tem : a) {
-                if (tem.first == '\0') continue;
-                if (b.find(tem.first) != b.end()) {
-                    ins[tem.first] = tem.second;
-                    sz += tem.second;
-                }
-            }
-            // narrows down possibilities
-            ins['\0'] = sz;
-            copy[cy + y][cx + x] = ins;
-        }
+        grid[cy][cx] = map<char, int> {{poss, 1}, {'\0', 1}};
+        vector<vector<map<char, int>>> copy = enforce(grid, rules);
         // recursion
         vector<vector<char>> res = wfc(copy, rules, tiles, n2, m2);
         // means that the only element is the one showing
@@ -158,9 +176,6 @@ vector<vector<char>> wfc(vector<vector<map<char, int>>> grid, map<char, vector<m
                 } else {
                     cout << "reject\n";
                 }
-            }
-            if (no.size() >= grid[cy][cx].size() - 1) {
-                return {};
             }
         } else {
             // return answer
