@@ -56,7 +56,10 @@ vector<vector<char>> stitch(vector<vector<char>> ans, map<char, vector<map<char,
             int ex = min(int(ans[0].size() - 1), (x + 1) * (BSIDE + DIST));
             for (int i = sy; i <= ey; i ++) {
                 for (int j = sx; j <= ex; j ++) {
-                    cout << ans[i][j];
+                    if (ans[i][j] == ' ') cout << 'x';
+                    else {
+                        cout << ans[i][j];
+                    }
                 }
                 cout << "\n";
             }
@@ -90,7 +93,10 @@ vector<vector<char>> stitch(vector<vector<char>> ans, map<char, vector<map<char,
             vector<vector<char>> next = getans(disty, distx, all, old);
             for (int i = 0; i < disty; i ++) {
                 for (int j = 0; j < distx; j ++) {
-                    cout << next[i][j];
+                    if (next[i][j] == ' ') cout << 'x';
+                    else {
+                        cout << next[i][j];
+                    }
                 }
                 cout << "\n";
             }

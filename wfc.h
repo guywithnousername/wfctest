@@ -6,7 +6,7 @@
 #include <set>
 #include <vector>
 using namespace std;
-bool DEBUG_MAP = true;
+bool DEBUG_MAP = false;
 bool DEBUG_REJECT = false;
 bool DEBUG_REJECT_MAP = false;
 
@@ -56,7 +56,7 @@ vector<vector<map<char, int>>> enforce(vector<vector<map<char, int>>> grid, map<
             for (int dir = 0; dir < 8; dir ++) {
                 int x = dirs[dir].first;
                 int y = dirs[dir].second;
-                if (cy + y < 0 || cy + y >= grid.size() || cx + x < 0 || cx + x >= m2) continue;
+                if (cy + y < 0 || cy + y >= grid.size() || cx + x < 0 || cx + x >= grid[0].size()) continue;
                 map<char, int> a = {}; // possibilities from rules list
                 map<char, int> b = grid[cy + y][cx + x]; // current possibilities
                 map<char, int> ins = {};
@@ -74,6 +74,7 @@ vector<vector<map<char, int>>> enforce(vector<vector<map<char, int>>> grid, map<
             }
         }
     }
+    return copy;
 }
 
 vector<vector<char>> wfc(vector<vector<map<char, int>>> grid, map<char, vector<map<char, int>>> rules, vector<char> tiles, int n2, int m2) {
@@ -139,7 +140,7 @@ vector<vector<char>> wfc(vector<vector<map<char, int>>> grid, map<char, vector<m
     while (1) {
         // trying to solve problem that choose keeps outputting \0
         if (no.size() >= grid[cy][cx].size() - 1) {
-                return {};
+            return wfc(grid, rules, tiles, n2, m2);
         }
         // gets the possibility
         char poss = choose(grid[cy][cx]);
@@ -271,4 +272,4 @@ vector<vector<char>> generate(vector<vector<char>> grid, int n2, int m2, map<cha
     // creates arguments and uses the function.
     return getans(n2, m2, rules);
 }
-#endif
+#endif WFC_INCLUDE
